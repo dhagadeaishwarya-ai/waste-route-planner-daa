@@ -1318,32 +1318,77 @@ void capacityRoute(){
 /**********************************************************************************************
 ROUTE COMPARISON FUNCTIONALITY
 **********************************************************************************************/
+/**********************************************************************************************
+ROUTE COMPARISON FUNCTIONALITY
+**********************************************************************************************/
 void compareRoutes(){
     system("cls");
 
     if(savedRoutes.empty()) {
-        cout << YELLOW << "No saved routes to compare. Generate routes first using TSP-Lite.\n" << RESET;
+        cout << YELLOW
+             << "No saved routes to compare. Generate routes first using TSP-Lite.\n"
+             << RESET;
         return;
     }
 
-    cout << BLUE << "=============== ROUTE COMPARISON ===============\n" << RESET;
+    cout << BLUE
+         << "=============== ROUTE COMPARISON ===============\n"
+         << RESET;
+
     cout << "Number of saved routes: " << savedRoutes.size() << "\n\n";
 
-    if(savedRoutes.size() < 2) {
-        cout << YELLOW << "Need at least 2 routes for comparison.\n" << RESET;
-        return;
+    /* ============================================================
+       DISPLAY COMPLETE DETAILS OF EACH ROUTE
+       ============================================================ */
+    for(int i = 0; i < savedRoutes.size(); i++){
+        Route &r = savedRoutes[i];
+
+        cout << MAGENTA
+             << "\n---------------- ROUTE #" << (i + 1)
+             << " DETAILS ----------------\n"
+             << RESET;
+
+        cout << "Stops Order:\n";
+
+        for(int j = 0; j < r.path.size(); j++){
+            cout << "  (" << j + 1 << ") "
+                 << zones[r.path[j]].name;
+
+            if(j > 0){
+                int prev = r.path[j - 1];
+                int cur  = r.path[j];
+                cout << "  [Distance from prev: "
+                     << dist[prev][cur] << " km]";
+            }
+            cout << "\n";
+        }
+
+        cout << "\nSummary:\n";
+        cout << "  Total Distance : " << r.totalDistance << " km\n";
+        cout << "  Total Cost     : Rs. "
+             << fixed << setprecision(2) << r.totalCost << "\n";
+        cout << "  Total Waste    : " << r.totalWaste << " units\n";
+        cout << "  Total Stops    : " << r.path.size() << "\n";
     }
+
+    /* ============================================================
+       COMPARISON TABLE
+       ============================================================ */
+    cout << BLUE
+         << "\n=============== ROUTE COMPARISON TABLE ===============\n"
+         << RESET;
 
     cout << left << setw(10) << "ROUTE #"
          << setw(15) << "DISTANCE (km)"
          << setw(15) << "COST (Rs.)"
          << setw(15) << "WASTE"
          << "STOPS\n";
+
     cout << "--------------------------------------------------------------\n";
 
-    for(int i = 0; i < savedRoutes.size(); i++) {
+    for(int i = 0; i < savedRoutes.size(); i++){
         Route& r = savedRoutes[i];
-        cout << left << setw(10) << (i+1)
+        cout << left << setw(10) << (i + 1)
              << setw(15) << r.totalDistance
              << setw(15) << fixed << setprecision(2) << r.totalCost
              << setw(15) << r.totalWaste
@@ -1351,34 +1396,7 @@ void compareRoutes(){
     }
 
     cout << "--------------------------------------------------------------\n";
-
-    // Find best route by different criteria
-    int bestDistance = 0, bestCost = 0, bestWaste = 0;
-    int minDist = savedRoutes[0].totalDistance;
-    double minCost = savedRoutes[0].totalCost;
-    int maxWaste = savedRoutes[0].totalWaste;
-
-    for(int i = 0; i < savedRoutes.size(); i++) {
-        if(savedRoutes[i].totalDistance < minDist) {
-            minDist = savedRoutes[i].totalDistance;
-            bestDistance = i;
-        }
-        if(savedRoutes[i].totalCost < minCost) {
-            minCost = savedRoutes[i].totalCost;
-            bestCost = i;
-        }
-        if(savedRoutes[i].totalWaste > maxWaste) {
-            maxWaste = savedRoutes[i].totalWaste;
-            bestWaste = i;
-        }
-    }
-
-    cout << GREEN << "\nBEST ROUTES:\n" << RESET;
-    cout << "Shortest Distance: Route #" << (bestDistance + 1) << " (" << minDist << " km)\n";
-    cout << "Lowest Cost: Route #" << (bestCost + 1) << " (Rs. " << fixed << setprecision(2) << minCost << ")\n";
-    cout << "Maximum Waste: Route #" << (bestWaste + 1) << " (" << maxWaste << " units)\n";
 }
-
 /**********************************************************************************************
 STATISTICAL ANALYSIS
 **********************************************************************************************/
